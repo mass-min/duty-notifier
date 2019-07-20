@@ -2,10 +2,14 @@
 
 namespace App\Console\Commands;
 
+use App\Notifications\WeekDuty;
 use Illuminate\Console\Command;
+use Illuminate\Notifications\Notifiable;
 
 class NoticeWeekDutyCommand extends Command
 {
+    use Notifiable;
+
     /**
      * The name and signature of the console command.
      *
@@ -37,7 +41,18 @@ class NoticeWeekDutyCommand extends Command
      */
     public function handle()
     {
-        $duty = '@hideyoshi';
-        echo "今週の当番は {$duty} です\n";
+        $this->notify(new WeekDuty());
+        $this->line('Send Completed.');
+    }
+
+    /**
+     * Slackチャンネルに対する通知をルートする
+     *
+     * @param  \Illuminate\Notifications\Notification  $notification
+     * @return string
+     */
+    public function routeNotificationForSlack($notification)
+    {
+        return env('SLACK_INCOMING_WEBHOOK_URL');
     }
 }
