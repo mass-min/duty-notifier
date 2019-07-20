@@ -14,10 +14,11 @@ class WeekDuty extends Notification
     /**
      * Create a new notification instance.
      *
-     * @return void
+     * @param $dutyIds
      */
-    public function __construct()
+    public function __construct($dutyIds)
     {
+        $this->dutyIds = $dutyIds;
     }
 
     /**
@@ -35,9 +36,14 @@ class WeekDuty extends Notification
     {
         $username = env('NOTIFIER_USERNAME', '当番通知くん');
 
+        $mentionText = '';
+        foreach ($this->dutyIds as $dutyId) {
+            $mentionText .= '<@' . $dutyId . '>';
+        }
+
         return (new SlackMessage())
             ->from($username, ':red_circle:')
             ->to(env('TARGET_SLACK_CHANNEL_ID'))
-            ->content('今週の当番は <@UA5URN0QM> です');
+            ->content('今週の当番は' . $mentionText . 'です');
     }
 }
